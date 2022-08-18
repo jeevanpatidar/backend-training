@@ -1,7 +1,9 @@
 const { count } = require("console")
-const BookModel= require("../models/bookModel")
+const bookModel = require("../models/bookModel")
 
-const createBook= async function (req, res) {
+//const BookModel= require("../models/bookModel")
+
+/**const createBook= async function (req, res) {
     let data= req.body
 
     let savedData= await BookModel.create(data)
@@ -56,4 +58,30 @@ const deleteBooks= async function (req, res) {
 module.exports.createBook= createBook
 module.exports.getBooksData= getBooksData
 module.exports.updateBooks= updateBooks
-module.exports.deleteBooks= deleteBooks
+module.exports.deleteBooks= deleteBooks*/
+//NEW------------------------------------------------------------------------------------------------------
+
+
+const createBook= async function (req, res) {
+    let data= req.body
+    let savedData= await bookModel.create(data)
+    res.send({msg: savedData})
+}
+
+
+//--------------------------------------------------------------------------------------------------
+
+
+const findBook = async function (req, res) {
+    let bookcost= await bookModel.find({price:{$gte: 50,$lte:100} } ).select({ author_id})
+let authors= await authorModel.find()
+let result = authors.filter((author)=>{
+let author_id=author.author_id
+let flag= bookcost.find((book)=>book.author_id==author_id)
+if(flag)return true
+})
+let author_name=result.map(obj=> obj.author_name)
+res.send({authors:author_name})
+}
+module.exports.createBook=createBook
+module.exports.findBook=findBook
