@@ -1,19 +1,29 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema( {
-    firstName: String,
-    lastName: String,
-    mobile: {
-        type: String,
-        unique: true,
-        required: true
+    name: String,
+    //lastName: String,
+    //mobile: {
+      //  type: String,
+      //  unique: true,
+      //  required: true
+    //},
+    //emailId: String,
+    balance:{
+    type:Number,
+    default:100
     },
-    emailId: String,
+    adress:String,
+    age: Number,
     gender: {
         type: String,
         enum: ["male", "female", "LGBTQ"] //"falana" will give an error
     },
-    age: Number,
+    isfreeappuser:{
+        type:Boolean,
+        default:false
+    }
+    
     // isIndian: Boolean,
     // parentsInfo: {
     //     motherName: String,
