@@ -21,6 +21,22 @@ const loginUser = async function (req, res) {
       status: false,
       msg: "username or the password is not corerct",
     });
+  }
+  
+/**const loginUser = async function (req, res,next) {
+  let userName = req.body.emailId;
+  let password = req.body.password;
+
+  let user = await userModel.findOne({ emailId: userName, password: password });
+  if (!user){
+    return res.send({status:false,msg:"username or password is incorrect",});
+}else if(user.isDeleted === true){
+    res.send("this account is deleted you can't login, please create new account")
+    }else{
+      next()
+   }
+ 
+}
 
   // Once the login is successful, create the jwt token with sign function
   // Sign function has 2 inputs:
@@ -28,7 +44,7 @@ const loginUser = async function (req, res) {
   // The decision about what data to put in token depends on the business requirement
   // Input 2 is the secret
   // The same secret will be used to decode tokens
-  let token = jwt.sign(
+  /**let token = jwt.sign(
     {
       userId: user._id.toString(),
       batch: "thorium",
@@ -37,8 +53,8 @@ const loginUser = async function (req, res) {
     "functionup-thorium"
   );
   res.setHeader("x-auth-token", token);
-  res.send({ status: true, data: token });
-};
+  res.send({ status: true, data: token });*/
+
 
 const getUserData = async function (req, res) {
   let token = req.headers["x-Auth-token"];
@@ -84,16 +100,27 @@ const updateUser = async function (req, res) {
   res.send({ status: updatedUser, data: updatedUser });
 };
 
+const deleteUser = async function(req, res) {    
+  let userId = req.params.userId
+  let user = await userModel.findById(userId)
+  if(!user) {
+      return res.send({status: false, message: "no such user exists"})
+  }else{
+  let updatedUser = await userModel.findOneAndUpdate({_id: userId}, {isDeleted: true}, {new: true})
+  res.send({status: true, d1 :"user data successfully", data: updatedUser})
+}
+};
+
 const postMessage = async function (req, res) {
     let message = req.body.message
     // Check if the token is present
     // Check if the token present is a valid token
     // Return a different error message in both these cases
-    let token = req.headers["x-auth-token"]
-    if(!token) return res.send({status: false, msg: "token must be present in the request header"})
-    let decodedToken = jwt.verify(token, 'functionup-thorium')
+    //let token = req.headers["x-auth-token"]
+    //if(!token) return res.send({status: false, msg: "token must be present in the request header"})
+    //let decodedToken = jwt.verify(token, 'functionup-thorium')
 
-    if(!decodedToken) return res.send({status: false, msg:"token is not valid"})
+    //if(!decodedToken) return res.send({status: false, msg:"token is not valid"})
     
     //userId for which the request is made. In this case message to be posted.
     let userToBeModified = req.params.userId
@@ -119,4 +146,5 @@ module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
+module.exports.deleteUser=deleteUser;
 module.exports.postMessage = postMessage
