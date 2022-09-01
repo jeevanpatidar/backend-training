@@ -3,6 +3,7 @@ const mongoose  = require("mongoose");
 const userModel = require("../models/userModel");
 
 const authenticate = async function (req, req,) {
+    try{
     //check the token in request header
     //validate this token
     let userName = req.body.emailId; 
@@ -16,29 +17,44 @@ const authenticate = async function (req, req,) {
         "functionup-Plutonium-key"
     );
     res.setHeader("x-auth-token", token);
-    res.send({ status: true, date: token });
-};
+    res.ststus().send({ status: true, date: token });
+}
+catch(err)
+{
+  console.log("this is the error:",err)
+  res.status(200).send({msg:"server error",error:err})
+}};
 
+//*********************************************************************************************
 
 const authorise = function (req, res, ) {
+    try{
     // comapre the logged in user's id and the id in request
     let token = req.headers["x-auth-token"];
     if(!token) token= req.headers["x-auth-token"];
-    if(!token) return res.send({status:true, msg: "token must be important"})
+    if(!token) return res.status().send({status:true, msg: "token must be important"})
 
     let decodedToken= jwt.verify(token,"functionup-Plutonium-key",(err, decodecodedToken) => {
     if (err) {
-        return res.send("you have entered incorrect token or incorrect length of token")
+        return res.status().send("you have entered incorrect token or incorrect length of token")
     } (decodedToken == true)
     next()
     });
     console.log(decodedToken)
 }
+catch(err)
+{
+  console.log("this is the error:",err)
+  res.status(403).send({msg:"server error",error:err})
+}}
+
+//****************************************************************************************
 
 const authorise2 =  function (req, res, next) {
+    try{
     let token = req.header["x-auth-token"];
     if(!token) token = req.header["x-auth-token"];
-if(!token) return res.send({satus:false, msg: "token must be present"});
+if(!token) return res.status().send({satus:false, msg: "token must be present"});
 
 let decodedToken= jwt.verify(token,"functionup-Plutonium-key")
 let userLoggedIn = decodedToken.userId
@@ -47,17 +63,21 @@ let userToBeModified =req.params.userId
 let isValid = mongoose.Types.ObjectId.isValid(userToBeModified)
 
 if (isValid === false){
-    return res.send("less id")
+    return res.status().send("less id")
 }
 else if (!decodedToken){
-    return res.send({status:false,msg:"token is invalid"});
+    return res.status().send({status:false,msg:"token is invalid"});
 }
 else if(userToBeModified != userLoggedIn){
-    return res.send({status:false,msg:"user logged is not allowed to modify the request users"})
+    return res.status().send({status:false,msg:"user logged is not allowed to modify the request users"})
 }else{
     next()
-}
-}
+}}
+catch(err)
+{
+  console.log("this is the error:",err)
+  res.status(401).send({msg:"server error",error:err})
+}}
 
 module.exports.authenticate=authenticate
 module.exports.authorise=authorise
